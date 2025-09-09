@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import ButtonLoader from "../utils/ButtonLoader";
+import { auth } from "../firebase/Config";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -9,9 +12,24 @@ const Register = () => {
   const [errors, setErrors] = useState({});
   const [registerLoading, setRegisterLoading] = useState(false);
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
-    // handle registration logic here
+
+    setRegisterLoading(true);
+    try {
+      const userCredentials = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const { id } = userCredentials.uid;
+
+      console.log(userCredentials);
+    } catch (err) {
+      console.log("Error Code: ", err.code, "Error Message: ", err.message);
+    } finally {
+      setRegisterLoading(false);
+    }
   };
 
   return (
@@ -60,7 +78,15 @@ const Register = () => {
               autoComplete="off"
             />
 
-            <button type="submit">Register</button>
+            <button type="submit">
+              {registerLoading ? (
+                <>
+                  Registering... <ButtonLoader />
+                </>
+              ) : (
+                "Register"
+              )}
+            </button>
           </div>
         </form>
       </div>
