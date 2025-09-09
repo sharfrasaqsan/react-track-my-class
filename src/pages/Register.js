@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import ButtonLoader from "../utils/ButtonLoader";
-import { auth } from "../firebase/Config";
+import { auth, db } from "../firebase/Config";
 import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -22,9 +23,10 @@ const Register = () => {
         email,
         password
       );
-      const { id } = userCredentials.uid;
-
-      console.log(userCredentials);
+      const { uid } = userCredentials.user;
+      const newUser = { name, email, createdAt: serverTimestamp() };
+      await setDoc(doc(db, "users", uid), newUser);
+      // setUsers((pre) => [...pre, newUser]);
     } catch (err) {
       console.log("Error Code: ", err.code, "Error Message: ", err.message);
     } finally {
