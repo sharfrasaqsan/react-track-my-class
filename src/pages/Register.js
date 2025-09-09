@@ -26,7 +26,7 @@ const Register = () => {
       const { uid } = userCredentials.user;
       const newUser = { name, email, createdAt: serverTimestamp() };
       await setDoc(doc(db, "users", uid), newUser);
-      setUsers((pre) => [...pre, newUser]);
+      // setUsers((pre) => [...pre, newUser]);
     } catch (err) {
       console.log("Error Code: ", err.code, "Error Message: ", err.message);
     } finally {
