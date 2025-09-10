@@ -4,6 +4,11 @@ import { Route, Routes } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import NotFound from "./pages/NotFound";
+import EditClass from "./pages/EditClass";
+import AddClass from "./pages/AddClass";
+import Profile from "./pages/Profile";
+import Class from "./pages/Class";
 
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -18,40 +23,77 @@ function App() {
   return (
     <div>
       <Header />
+      <Navbar />
 
       <div>
-        <Navbar />
-      </div>
+        <main>
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
 
-      <div>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/login"
-            element={
-              <PublicRoute>
-                <Login />
-              </PublicRoute>
-            }
-          />
+            <Route
+              path="/add-class"
+              element={
+                <ProtectedRoute>
+                  <AddClass />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/register"
-            element={
-              <PublicRoute>
-                <Register />
-              </PublicRoute>
-            }
-          />
-        </Routes>
+            <Route
+              path="/class"
+              element={
+                <ProtectedRoute>
+                  <Class />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/class/:id"
+              element={
+                <ProtectedRoute>
+                  <EditClass />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/login"
+              element={
+                <PublicRoute>
+                  <Login />
+                </PublicRoute>
+              }
+            />
+
+            <Route
+              path="/register"
+              element={
+                <PublicRoute>
+                  <Register />
+                </PublicRoute>
+              }
+            />
+
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </main>
       </div>
 
       <Footer />
