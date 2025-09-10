@@ -6,6 +6,7 @@ import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 import { useData } from "../context/DataContext";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "sonner";
+import { Link, useNavigate } from "react-router-dom";
 
 const Register = () => {
   const { setUser } = useAuth();
@@ -18,6 +19,8 @@ const Register = () => {
 
   const [registerLoading, setRegisterLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -47,6 +50,11 @@ const Register = () => {
       return;
     }
 
+    if (password.length > 20) {
+      setError("Password must be less than 20 characters");
+      return;
+    }
+
     setError("");
     setRegisterLoading(true);
     try {
@@ -70,6 +78,7 @@ const Register = () => {
       setEmail("");
       setPassword("");
       setConfirmPassword("");
+      navigate("/");
     } catch (err) {
       console.error("Firestore Error:", err.code, err.message);
       toast.error(err.message || "Failed to register");
@@ -132,7 +141,7 @@ const Register = () => {
             />
           </div>
 
-          <button type="submit">
+          <button type="submit" disabled={registerLoading}>
             {registerLoading ? (
               <>
                 Registering... <ButtonLoader />
@@ -141,6 +150,10 @@ const Register = () => {
               "Register"
             )}
           </button>
+
+          <p>
+            Already have an account? <Link to="/login">Login</Link>
+          </p>
 
           {error && <div className="alert alert-danger mt-2">{error}</div>}
         </form>
