@@ -7,6 +7,7 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
 import { Toaster } from "sonner";
+import ProtectedRoute from "./utils/ProtectedRoute";
 
 function App() {
   return (
@@ -19,7 +20,16 @@ function App() {
 
       <div>
         <Routes>
-          <Route path="/" element={<Dashboard />} />
+          <Route
+            path="/"
+            element={
+              <>
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              </>
+            }
+          />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
         </Routes>
