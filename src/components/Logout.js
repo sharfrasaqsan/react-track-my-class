@@ -2,7 +2,7 @@ import React from "react";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "sonner";
 import { signOut } from "firebase/auth";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { auth } from "../firebase/Config";
 
 const Logout = () => {
@@ -10,7 +10,7 @@ const Logout = () => {
   const navigate = useNavigate();
 
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return null;
   }
 
   const handleLogout = async () => {
