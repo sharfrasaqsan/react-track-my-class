@@ -99,7 +99,8 @@ const Login = () => {
           <button type="submit" disabled={loginLoading}>
             {loginLoading ? (
               <>
-                Loggingin... <ButtonToolbar />
+                Logging in...
+                <ButtonToolbar />
               </>
             ) : (
               "Login"
