@@ -3,19 +3,51 @@ import ButtonLoader from "../utils/ButtonLoader";
 import { auth, db } from "../firebase/Config";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, serverTimestamp, setDoc } from "firebase/firestore";
+import { useData } from "../context/DataContext";
+import { useAuth } from "../context/AuthContext";
+import { toast } from "sonner";
 
 const Register = () => {
+  const { setUser } = useAuth();
+  const { setUsers } = useData();
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const [errors, setErrors] = useState({});
   const [registerLoading, setRegisterLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleRegister = async (e) => {
     e.preventDefault();
 
+    if (!name) {
+      setError("Name is required");
+      return;
+    }
+
+    if (!email) {
+      setError("Email is required");
+      return;
+    }
+
+    if (!password) {
+      setError("Password is required");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
+
+    setError("");
     setRegisterLoading(true);
     try {
       const userCredentials = await createUserWithEmailAndPassword(
@@ -24,11 +56,24 @@ const Register = () => {
         password
       );
       const { uid } = userCredentials.user;
-      const newUser = { name, email, createdAt: serverTimestamp() };
+      const newUser = {
+        id: uid,
+        name,
+        email,
+        createdAt: serverTimestamp(),
+      };
       await setDoc(doc(db, "users", uid), newUser);
-      // setUsers((pre) => [...pre, newUser]);
+      setUsers((prev) => [...prev, { id: uid, ...newUser }]);
+      setUser({ id: uid, ...newUser });
+      toast.success("User registered successfully");
+      setName("");
+      setEmail("");
+      setPassword("");
+      setConfirmPassword("");
     } catch (err) {
-      console.log("Error Code: ", err.code, "Error Message: ", err.message);
+      console.error("Firestore Error:", err.code, err.message);
+      toast.error(err.message || "Failed to register");
+      setError(err.message || "Failed to register");
     } finally {
       setRegisterLoading(false);
     }
@@ -49,7 +94,9 @@ const Register = () => {
               onChange={(e) => setName(e.target.value)}
               autoComplete="off"
             />
+          </div>
 
+          <div>
             <label htmlFor="email">Email</label>
             <input
               type="email"
@@ -59,7 +106,9 @@ const Register = () => {
               onChange={(e) => setEmail(e.target.value)}
               autoComplete="off"
             />
+          </div>
 
+          <div>
             <label htmlFor="password">Password</label>
             <input
               type="password"
@@ -69,7 +118,9 @@ const Register = () => {
               onChange={(e) => setPassword(e.target.value)}
               autoComplete="off"
             />
+          </div>
 
+          <div>
             <label htmlFor="confirmPassword">Confirm Password</label>
             <input
               type="password"
@@ -79,17 +130,19 @@ const Register = () => {
               onChange={(e) => setConfirmPassword(e.target.value)}
               autoComplete="off"
             />
-
-            <button type="submit">
-              {registerLoading ? (
-                <>
-                  Registering... <ButtonLoader />
-                </>
-              ) : (
-                "Register"
-              )}
-            </button>
           </div>
+
+          <button type="submit">
+            {registerLoading ? (
+              <>
+                Registering... <ButtonLoader />
+              </>
+            ) : (
+              "Register"
+            )}
+          </button>
+
+          {error && <div className="alert alert-danger mt-2">{error}</div>}
         </form>
       </div>
     </div>

@@ -6,6 +6,7 @@ import Register from "./pages/Register";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
+import { Toaster } from "sonner";
 
 function App() {
   return (
@@ -25,6 +26,8 @@ function App() {
       </div>
 
       <Footer />
+
+      <Toaster />
     </div>
   );
 }
