@@ -6,9 +6,14 @@ const ClassCard = ({ classItem }) => {
       <td>{classItem.title}</td>
       <td>{classItem.description}</td>
       <td>{classItem.location}</td>
-      <td>{classItem.startTime}</td>
-      <td>{classItem.endTime}</td>
       <td>{classItem.capacity}</td>
+      <td>
+        {classItem.schedule?.map((s, index) => (
+          <div key={index}>
+            <strong>{s.day}</strong>: {s.startTime} - {s.endTime}
+          </div>
+        ))}
+      </td>
     </tr>
   );
 };
