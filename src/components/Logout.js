@@ -9,28 +9,24 @@ const Logout = () => {
   const { user, setUser } = useAuth();
   const navigate = useNavigate();
 
-  if (!user) {
-    return null;
-  }
+  if (!user) return null;
 
   const handleLogout = async () => {
     try {
-      if (user) {
-        await signOut(auth);
-        setUser(null);
-        toast.success("Logged out successfully");
-        navigate("/login");
-      }
+      await signOut(auth);
+      setUser(null);
+      toast.success("Logged out successfully");
+      navigate("/login");
     } catch (err) {
-      console.log("Error logging out:", err.code, err.message);
+      console.error("Logout Error:", err);
       toast.error("Error logging out");
     }
   };
 
   return (
-    <div>
-      <button onClick={handleLogout}>Logout</button>
-    </div>
+    <button onClick={handleLogout} className="btn btn-outline-danger btn-sm">
+      Logout
+    </button>
   );
 };
 

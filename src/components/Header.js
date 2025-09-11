@@ -3,16 +3,18 @@ import Logout from "./Logout";
 
 const Header = () => {
   return (
-    <div>
-      <div>
-        <h2>Track My Class</h2>
-        <span>Track Time. Teach Smarter.</span>
-      </div>
+    <header className="bg-light py-3 border-bottom shadow-sm">
+      <div className="container d-flex justify-content-between align-items-center">
+        <div>
+          <h2 className="m-0 text-primary fw-bold">Track My Class</h2>
+          <span className="text-muted small">Track Time. Teach Smarter.</span>
+        </div>
 
-      <div>
-        <Logout />
+        <div>
+          <Logout />
+        </div>
       </div>
-    </div>
+    </header>
   );
 };
 

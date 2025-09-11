@@ -7,8 +7,9 @@ const DataContext = createContext();
 
 export const DataProvider = ({ children }) => {
   const [users, setUsers] = useState([]);
+  const [classes, setClasses] = useState([]);
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -30,8 +31,30 @@ export const DataProvider = ({ children }) => {
     fetchUsers();
   }, []);
 
+  useEffect(() => {
+    const fetchClasses = async () => {
+      try {
+        const res = await getDocs(collection(db, "classes"));
+        const resData = res.docs?.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setClasses(resData);
+      } catch (err) {
+        console.log("Error fetching classes : ", err.code, err.message);
+        toast.error("Error fetching classes");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchClasses();
+  }, []);
+
   return (
-    <DataContext.Provider value={{ users, setUsers, loading }}>
+    <DataContext.Provider
+      value={{ users, setUsers, classes, setClasses, loading }}
+    >
       {children}
     </DataContext.Provider>
   );
