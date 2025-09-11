@@ -1,16 +1,24 @@
-import React from "react";
 import { useData } from "../../context/DataContext";
 import ClassCard from "./ClassCard";
+import NotFoundText from "../../utils/NotFoundText";
+import Loader from "../../utils/Loader";
 
 const ClassList = () => {
-  const { classes } = useData();
+  const { classes, loading } = useData();
+
+  if (loading) return <Loader />;
+  if (!classes) return <NotFoundText text="No classes available." />;
+
   return (
-    <div>
-      <table>
-        <thead>
+    <div className="table-container py-5">
+      <table className="table table-bordered table-striped table-hover table-responsive">
+        <thead className="thead-dark">
           <tr>
             <th>Title</th>
             <th>Description</th>
+            <th>Location</th>
+            <th>Capacity</th>
+            <th>Schedule</th>
           </tr>
         </thead>
         <tbody>
