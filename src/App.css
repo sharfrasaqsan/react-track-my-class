@@ -103,11 +103,11 @@ button,
 .button-full {
   width: 100% !important;
 }
-
+/* 
 .auth-form-wrapper {
   margin-top: 3rem !important;
   margin-bottom: 3rem !important;
-}
+} */
 
 .auth-form {
   padding: 2rem !important;
