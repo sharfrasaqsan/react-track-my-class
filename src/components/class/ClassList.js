@@ -10,7 +10,7 @@ const ClassList = () => {
   if (!classes) return <NotFoundText text="No classes available." />;
 
   return (
-    <div className="table-container py-5">
+    <div className="container table-container py-5">
       <table className="table table-bordered table-striped table-hover table-responsive">
         <thead className="thead-dark">
           <tr>
