@@ -1,7 +1,12 @@
 import React from "react";
+import ClassList from "../components/class/ClassList";
 
 const Class = () => {
-  return <div>Class</div>;
+  return (
+    <>
+      <ClassList />
+    </>
+  );
 };
 
 export default Class;

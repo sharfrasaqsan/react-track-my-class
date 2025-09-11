@@ -16,7 +16,7 @@ const AddClass = () => {
   const [description, setDescription] = useState("");
   const [location, setLocation] = useState("");
   const [capacity, setCapacity] = useState(0);
-  const [schedule, setSchedule] = useState({});
+  const [schedule, setSchedule] = useState([]);
 
   const [addLoading, setAddLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -72,7 +72,7 @@ const AddClass = () => {
       setCapacity(0);
       setSchedule({});
       toast.success("Class added successfully");
-      navigate("/classes");
+      navigate("/class");
     } catch (err) {
       console.log("Error adding class:", err.code, err.message);
       setError(err.message);
@@ -134,7 +134,7 @@ const AddClass = () => {
           </div>
 
           <div className="mb-4">
-            <label htmlFor="schedule">Class Schedule (e.g., MWF 5–6 PM)</label>
+            <label htmlFor="schedule">Class Schedule</label>
             <input
               type="text"
               id="schedule"
