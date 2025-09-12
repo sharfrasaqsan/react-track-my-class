@@ -1,7 +1,274 @@
-import React from "react";
+import { useEffect, useState } from "react";
+import { useAuth } from "../context/AuthContext";
+import { useData } from "../context/DataContext";
+import { useNavigate, useParams } from "react-router-dom";
+import ButtonLoader from "../utils/ButtonLoader";
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "../firebase/Config";
 
 const EditClass = () => {
-  return <div>EditClass</div>;
+  const { user } = useAuth();
+  const { classes, setClasses, loading } = useData();
+
+  const [editTitle, setEditTitle] = useState("");
+  const [editDescription, setEditDescription] = useState("");
+  const [editLocation, setEditLocation] = useState("");
+  const [editCapacity, setEditCapacity] = useState(0);
+  const [editSchedule, setEditSchedule] = useState([]);
+  const [editSelectedDay, setEditSelectedDay] = useState("");
+  const [editStartTime, setEditStartTime] = useState("");
+  const [editEndTime, setEditEndTime] = useState("");
+
+  const [addLoading, setAddLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const navigate = useNavigate();
+
+  const { id } = useParams();
+
+  const classToEdit = classes?.find((cls) => cls.id === id);
+
+  useEffect(() => {
+    if (classToEdit) {
+      setEditTitle(classToEdit.title);
+      setEditDescription(classToEdit.description);
+      setEditLocation(classToEdit.location);
+      setEditCapacity(classToEdit.capacity);
+      setEditSchedule(classToEdit.schedule || []);
+    }
+  }, [classToEdit]);
+
+  const handleEditAddSchedule = () => {
+    if (!editSelectedDay || !editStartTime || !editEndTime) {
+      setError("Please fill out all schedule fields.");
+      return;
+    }
+
+    if (editSchedule.some((item) => item.day === editSelectedDay)) {
+      setError(`Schedule for ${editSelectedDay} is already added.`);
+      return;
+    }
+
+    setEditSchedule([
+      ...editSchedule,
+      { day: editSelectedDay, startTime: editStartTime, endTime: editEndTime },
+    ]);
+    setEditSelectedDay("");
+    setEditStartTime("");
+    setEditEndTime("");
+    setError(null);
+  };
+
+  const handleEditSchedule = async (classId) => {
+    if (!editTitle) {
+      setError("Title is required");
+      return;
+    }
+
+    if (!editDescription) {
+      setError("Description is required");
+      return;
+    }
+
+    if (!editLocation) {
+      setError("Location is required");
+      return;
+    }
+
+    if (editCapacity <= 0) {
+      setError("Capacity must be greater than zero");
+      return;
+    }
+
+    if (editSchedule.length === 0) {
+      setError("Please add at least one day to the schedule.");
+      return;
+    }
+
+    setAddLoading(true);
+    setError(null);
+    try {
+      const updatedClass = {
+        id: classId,
+        title: editTitle,
+        description: editDescription,
+        location: editLocation,
+        capacity: editCapacity,
+        schedule: editSchedule,
+      };
+
+      await updateDoc(doc(db, "classes", classId), updatedClass);
+
+      setClasses((prev) =>
+        prev?.map((cls) => (cls.id === classId ? updatedClass : cls))
+      );
+      navigate("/classes");
+    } catch (err) {
+      console.log("Error updating class : ", err.code, err.message);
+      setError("Failed to update class");
+    } finally {
+      setAddLoading(false);
+    }
+  };
+
+  return (
+    <section className="container py-5">
+      <div className="auth-form shadow-sm p-4 rounded">
+        <h2 className="text-primary mb-4 text-center">Add Tuition Class</h2>
+
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleEditSchedule(classToEdit?.id);
+          }}
+        >
+          <div className="mb-4">
+            <label htmlFor="title" className="form-label">
+              Class Title
+            </label>
+            <input
+              type="text"
+              id="title"
+              className="form-control"
+              value={editTitle}
+              onChange={(e) => setEditTitle(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="mb-4">
+            <label htmlFor="description" className="form-label">
+              Class Description
+            </label>
+            <textarea
+              id="description"
+              rows="3"
+              className="form-control"
+              value={editDescription}
+              onChange={(e) => setEditDescription(e.target.value)}
+              required
+            ></textarea>
+          </div>
+
+          <div className="mb-4">
+            <label htmlFor="location" className="form-label">
+              Class Location
+            </label>
+            <input
+              type="text"
+              id="location"
+              className="form-control"
+              value={editLocation}
+              onChange={(e) => setEditLocation(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="mb-4">
+            <label htmlFor="capacity" className="form-label">
+              Class Capacity
+            </label>
+            <input
+              type="number"
+              id="capacity"
+              className="form-control"
+              value={editCapacity}
+              onChange={(e) => setEditCapacity(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="row p-3 mb-4 border rounded">
+            <div className="mb-3 col-md-3">
+              <label htmlFor="day" className="form-label">
+                Select Day
+              </label>
+              <select
+                id="day"
+                className="form-select"
+                value={editSelectedDay}
+                onChange={(e) => setEditSelectedDay(e.target.value)}
+              >
+                <option value="" disabled>
+                  Select Day
+                </option>
+                <option value="Monday">Monday</option>
+                <option value="Tuesday">Tuesday</option>
+                <option value="Wednesday">Wednesday</option>
+                <option value="Thursday">Thursday</option>
+                <option value="Friday">Friday</option>
+                <option value="Saturday">Saturday</option>
+                <option value="Sunday">Sunday</option>
+              </select>
+            </div>
+
+            <div className="mb-3 col-md-3">
+              <label htmlFor="startTime" className="form-label">
+                Start Time
+              </label>
+              <input
+                type="time"
+                id="startTime"
+                className="form-control"
+                value={editStartTime}
+                onChange={(e) => setEditStartTime(e.target.value)}
+              />
+            </div>
+
+            <div className="mb-3 col-md-3">
+              <label htmlFor="endTime" className="form-label">
+                End Time
+              </label>
+              <input
+                type="time"
+                id="endTime"
+                className="form-control"
+                value={editEndTime}
+                onChange={(e) => setEditEndTime(e.target.value)}
+              />
+            </div>
+
+            <div className="mb-3 col-md-3 d-flex align-items-end">
+              <button
+                type="button"
+                className="btn btn-outline-secondary w-100"
+                onClick={handleEditAddSchedule}
+                disabled={!editSelectedDay || !editStartTime || !editEndTime}
+              >
+                Add Schedule
+              </button>
+            </div>
+
+            <div className="col-12">
+              <ul className="list-group">
+                {editSchedule?.map((item, index) => (
+                  <li key={index} className="list-group-item">
+                    {item.day}: {item.startTime} - {item.endTime}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {error && <p className="text-danger mb-3">{error}</p>}
+
+          <button
+            type="submit"
+            className="btn btn-primary w-100"
+            disabled={addLoading}
+          >
+            {addLoading ? (
+              <>
+                Updating class... <ButtonLoader />
+              </>
+            ) : (
+              "Update Class"
+            )}
+          </button>
+        </form>
+      </div>
+    </section>
+  );
 };
 
 export default EditClass;

@@ -106,12 +106,11 @@ const AddClass = () => {
   if (loading) return <Loader />;
 
   return (
-    <section className="container auth-form-wrapper py-5">
+    <section className="container py-5">
       <div className="auth-form shadow-sm p-4 rounded">
         <h2 className="text-primary mb-4 text-center">Add Tuition Class</h2>
 
         <form onSubmit={handleSubmit}>
-          {/* Class Title, Description, Location, and Capacity Inputs */}
           <div className="mb-4">
             <label htmlFor="title" className="form-label">
               Class Title
@@ -168,7 +167,6 @@ const AddClass = () => {
             />
           </div>
 
-          {/* Schedule Section with Grid Layout */}
           <div className="row p-3 mb-4 border rounded">
             <div className="mb-3 col-md-3">
               <label htmlFor="day" className="form-label">
@@ -230,10 +228,9 @@ const AddClass = () => {
               </button>
             </div>
 
-            {/* Display Added Schedule */}
             <div className="col-12">
               <ul className="list-group">
-                {schedule.map((item, index) => (
+                {schedule?.map((item, index) => (
                   <li key={index} className="list-group-item">
                     {item.day}: {item.startTime} - {item.endTime}
                   </li>
@@ -242,10 +239,8 @@ const AddClass = () => {
             </div>
           </div>
 
-          {/* Error Message */}
           {error && <p className="text-danger mb-3">{error}</p>}
 
-          {/* Submit Button */}
           <button
             type="submit"
             className="btn btn-primary w-100"

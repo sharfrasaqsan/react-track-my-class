@@ -19,6 +19,7 @@ const ClassList = () => {
             <th>Location</th>
             <th>Capacity</th>
             <th>Schedule</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
