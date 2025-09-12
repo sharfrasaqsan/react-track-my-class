@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const ClassCard = ({ classItem }) => {
   return (
@@ -15,7 +16,12 @@ const ClassCard = ({ classItem }) => {
         ))}
       </td>
       <td>
-        <button className="btn btn-primary btn-sm me-2">Edit</button>
+        <Link
+          to={`/classes/edit/${classItem.id}`}
+          className="btn btn-primary btn-sm me-2"
+        >
+          Edit
+        </Link>
         <button className="btn btn-danger btn-sm">Delete</button>
       </td>
     </tr>

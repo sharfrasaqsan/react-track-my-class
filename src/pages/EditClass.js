@@ -5,6 +5,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import ButtonLoader from "../utils/ButtonLoader";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase/Config";
+import Loader from "../utils/Loader";
+import NotFoundText from "../utils/NotFoundText";
 
 const EditClass = () => {
   const { user } = useAuth();
@@ -111,10 +113,19 @@ const EditClass = () => {
     }
   };
 
+  if (loading) {
+    return <Loader />;
+  }
+
+  if (!user) return null;
+  if (!classToEdit) return <NotFoundText text="Class not found" />;
+  if (classToEdit.instructorId !== user.id)
+    return <NotFoundText text="You are not authorized to edit this class" />;
+
   return (
     <section className="container py-5">
       <div className="auth-form shadow-sm p-4 rounded">
-        <h2 className="text-primary mb-4 text-center">Add Tuition Class</h2>
+        <h2 className="text-primary mb-4 text-center">Edit Tuition Class</h2>
 
         <form
           onSubmit={(e) => {

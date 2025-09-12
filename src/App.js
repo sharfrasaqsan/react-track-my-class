@@ -56,7 +56,7 @@ function App() {
             />
 
             <Route
-              path="/class"
+              path="/classes"
               element={
                 <ProtectedRoute>
                   <Class />
@@ -65,7 +65,7 @@ function App() {
             />
 
             <Route
-              path="/class/:id"
+              path="/classes/edit/:id"
               element={
                 <ProtectedRoute>
                   <EditClass />
