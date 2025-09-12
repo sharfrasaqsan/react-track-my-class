@@ -92,7 +92,7 @@ const AddClass = () => {
       setDescription("");
       setLocation("");
       setCapacity(0);
-      setSchedule({});
+      setSchedule([]);
       toast.success("Class added successfully");
       navigate("/classes");
     } catch (err) {
@@ -230,7 +230,7 @@ const AddClass = () => {
 
             <div className="col-12">
               <ul className="list-group">
-                {schedule?.map((item, index) => (
+                {(schedule || [])?.map((item, index) => (
                   <li key={index} className="list-group-item">
                     {item.day}: {item.startTime} - {item.endTime}
                   </li>
