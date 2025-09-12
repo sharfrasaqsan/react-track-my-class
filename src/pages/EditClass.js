@@ -20,6 +20,7 @@ const EditClass = () => {
   const [editSelectedDay, setEditSelectedDay] = useState("");
   const [editStartTime, setEditStartTime] = useState("");
   const [editEndTime, setEditEndTime] = useState("");
+  const [editingIndex, setEditingIndex] = useState(null);
 
   const [addLoading, setAddLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -40,13 +41,23 @@ const EditClass = () => {
     }
   }, [classToEdit]);
 
+  // Validate end > start
+  const isTimeOrderValid = (start, end) => {
+    // strings "HH:MM" compare lexicographically OK for 24h time
+    return start < end;
+  };
+
   const handleEditAddSchedule = () => {
     if (!editSelectedDay || !editStartTime || !editEndTime) {
       setError("Please fill out all schedule fields.");
       return;
     }
-
-    if (editSchedule.some((item) => item.day === editSelectedDay)) {
+    if (!isTimeOrderValid(editStartTime, editEndTime)) {
+      setError("End time must be after start time.");
+      return;
+    }
+    // prevent duplicate day
+    if (editSchedule?.some((item) => item.day === editSelectedDay)) {
       setError(`Schedule for ${editSelectedDay} is already added.`);
       return;
     }
@@ -59,6 +70,69 @@ const EditClass = () => {
     setEditStartTime("");
     setEditEndTime("");
     setError(null);
+  };
+
+  const startEditingSchedule = (index) => {
+    const item = editSchedule[index];
+    setEditingIndex(index);
+    setEditSelectedDay(item.day);
+    setEditStartTime(item.startTime);
+    setEditEndTime(item.endTime);
+    setError(null);
+  };
+
+  const cancelEditingSchedule = () => {
+    setEditingIndex(null);
+    setEditSelectedDay("");
+    setEditStartTime("");
+    setEditEndTime("");
+    setError(null);
+  };
+
+  const saveEditedSchedule = () => {
+    if (!editSelectedDay || !editStartTime || !editEndTime) {
+      setError("Please fill out all schedule fields.");
+      return;
+    }
+    if (!isTimeOrderValid(editStartTime, editEndTime)) {
+      setError("End time must be after start time.");
+      return;
+    }
+    // Disallow changing to a day that already exists (other than the one we're editing)
+    if (
+      editSchedule?.some(
+        (item, idx) => idx !== editingIndex && item.day === editSelectedDay
+      )
+    ) {
+      setError(`Schedule for ${editSelectedDay} already exists.`);
+      return;
+    }
+
+    setEditSchedule((prev) =>
+      prev?.map((item, idx) =>
+        idx === editingIndex
+          ? {
+              day: editSelectedDay,
+              startTime: editStartTime,
+              endTime: editEndTime,
+            }
+          : item
+      )
+    );
+
+    setEditingIndex(null);
+    setEditSelectedDay("");
+    setEditStartTime("");
+    setEditEndTime("");
+    setError(null);
+  };
+
+  const removeScheduleItem = (index) => {
+    setEditSchedule((prev) => prev.filter((_, idx) => idx !== index));
+    // if you delete the one you were editing, reset edit state
+    if (editingIndex === index) {
+      cancelEditingSchedule();
+    }
   };
 
   const handleEditSchedule = async (classId) => {
@@ -199,6 +273,7 @@ const EditClass = () => {
                 className="form-select"
                 value={editSelectedDay}
                 onChange={(e) => setEditSelectedDay(e.target.value)}
+                // when editing, you can allow changing the day; duplicate prevention happens above
               >
                 <option value="" disabled>
                   Select Day
@@ -240,21 +315,62 @@ const EditClass = () => {
             </div>
 
             <div className="mb-3 col-md-3 d-flex align-items-end">
-              <button
-                type="button"
-                className="btn btn-outline-secondary w-100"
-                onClick={handleEditAddSchedule}
-                disabled={!editSelectedDay || !editStartTime || !editEndTime}
-              >
-                Add Schedule
-              </button>
+              {editingIndex === null ? (
+                <button
+                  type="button"
+                  className="btn btn-outline-secondary w-100"
+                  onClick={handleEditAddSchedule}
+                  disabled={!editSelectedDay || !editStartTime || !editEndTime}
+                >
+                  Add Schedule
+                </button>
+              ) : (
+                <div className="d-flex gap-2 w-100">
+                  <button
+                    type="button"
+                    className="btn btn-success flex-fill"
+                    onClick={saveEditedSchedule}
+                  >
+                    Save
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary flex-fill"
+                    onClick={cancelEditingSchedule}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              )}
             </div>
 
             <div className="col-12">
               <ul className="list-group">
                 {editSchedule?.map((item, index) => (
-                  <li key={index} className="list-group-item">
-                    {item.day}: {item.startTime} - {item.endTime}
+                  <li
+                    key={index}
+                    className="list-group-item d-flex justify-content-between align-items-center"
+                  >
+                    <div>
+                      <strong>{item.day}</strong>: {item.startTime} -{" "}
+                      {item.endTime}
+                    </div>
+                    <div className="d-flex gap-2">
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-primary"
+                        onClick={() => startEditingSchedule(index)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-danger"
+                        onClick={() => removeScheduleItem(index)}
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </li>
                 ))}
               </ul>
