@@ -94,7 +94,7 @@ const AddClass = () => {
       setCapacity(0);
       setSchedule({});
       toast.success("Class added successfully");
-      navigate("/class");
+      navigate("/classes");
     } catch (err) {
       console.log("Error adding class:", err.code, err.message);
       setError(err.message);
