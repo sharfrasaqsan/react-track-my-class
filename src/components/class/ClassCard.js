@@ -14,6 +14,10 @@ const ClassCard = ({ classItem }) => {
           </div>
         ))}
       </td>
+      <td>
+        <button className="btn btn-primary btn-sm me-2">Edit</button>
+        <button className="btn btn-danger btn-sm">Delete</button>
+      </td>
     </tr>
   );
 };
