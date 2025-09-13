@@ -2,7 +2,13 @@ import React, { useState } from "react";
 import ButtonLoader from "../utils/ButtonLoader";
 import { toast } from "sonner";
 import { db } from "../firebase/Config";
-import { collection, addDoc } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  updateDoc,
+  doc,
+  arrayUnion,
+} from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useData } from "../context/DataContext";
@@ -10,7 +16,7 @@ import Loader from "../utils/Loader";
 
 const AddClass = () => {
   const { user } = useAuth();
-  const { setClasses, loading } = useData();
+  const { setClasses, setUsers, loading } = useData();
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -100,16 +106,29 @@ const AddClass = () => {
         schedule,
         amount: parseFloat(amount),
         isActive: true,
-        instructorId: user.id,
+        createdBy: user.id,
         createdAt: new Date().toISOString(),
       };
       const res = await addDoc(collection(db, "classes"), newClass);
       setClasses((prev) => [...prev, { id: res.id, ...newClass }]);
+
+      await updateDoc(
+        doc(db, "users", user.id),
+        {
+          allClasses: arrayUnion(res.id),
+          updatedAt: new Date().toISOString(),
+        },
+        { merge: true }
+      );
+      setUsers((prev) => prev?.map((u) => u.id === user.id));
+
       setTitle("");
       setDescription("");
       setLocation("");
       setCapacity(0);
+      setAmount(0);
       setSchedule([]);
+
       toast.success("Class added successfully");
       navigate("/classes");
     } catch (err) {
@@ -165,7 +184,7 @@ const AddClass = () => {
                   id="capacity"
                   className="form-control"
                   value={capacity}
-                  onChange={(e) => setCapacity(e.target.value)}
+                  onChange={(e) => setCapacity(Number(e.target.value))}
                 />
               </div>
 
@@ -178,7 +197,7 @@ const AddClass = () => {
                   id="amount"
                   className="form-control"
                   value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
+                  onChange={(e) => setAmount(Number(e.target.value))}
                 />
               </div>
             </div>

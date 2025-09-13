@@ -1,3 +1,22 @@
+/* center in parent */
+.loader-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 200px; /* tweak or remove if you only need horizontal centering */
+}
+
+/* full-screen center (optional) */
+.loader-wrap--full {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: transparent; /* change to rgba(255,255,255,.6) if you want an overlay */
+  z-index: 9999;
+}
+
 .loader {
   width: 80px;
   height: 50px;

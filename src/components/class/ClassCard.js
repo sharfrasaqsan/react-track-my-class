@@ -1,12 +1,15 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
-import { doc, deleteDoc } from "firebase/firestore";
+import { doc, deleteDoc, updateDoc, arrayRemove } from "firebase/firestore";
 import { db } from "../../firebase/Config";
 import { useData } from "../../context/DataContext";
+import { useAuth } from "../../context/AuthContext";
+import NotFoundText from "../../utils/NotFoundText";
 
 const ClassCard = ({ classItem }) => {
-  const { setClasses } = useData();
+  const { user } = useAuth();
+  const { setClasses, setUsers } = useData();
 
   const handleDelete = async (classId) => {
     try {
@@ -14,12 +17,20 @@ const ClassCard = ({ classItem }) => {
       setClasses((prev) =>
         prev ? prev?.filter((classItem) => classItem.id !== classId) : []
       );
+
+      await updateDoc(doc(db, "users", classItem.createdBy), {
+        allClasses: arrayRemove(classId),
+        updatedAt: new Date().toISOSting(),
+      });
+      setUsers((prev) => prev?.map((u) => u.id === user.id));
       toast.success("Class deleted successfully");
     } catch (err) {
       console.error("Error deleting class:", err.code, err.message);
       toast.error("Failed to delete class. Please try again.");
     }
   };
+
+  if (classItem.length === 0) return <NotFoundText text="No Results" />;
 
   return (
     <tr>
@@ -36,6 +47,7 @@ const ClassCard = ({ classItem }) => {
           </div>
         ))}
       </td>
+
       <td>
         <Link
           to={`/classes/edit/${classItem.id}`}
