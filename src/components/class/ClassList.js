@@ -16,6 +16,8 @@ const ClassList = () => {
   if (!user) return null;
   if (classes.length === 0)
     return <NotFoundText text="No classes available right now." />;
+  if (!userClasses || userClasses.length === 0)
+    return <NotFoundText text="No classes available right now. Please create the first class." />;
 
   return (
     <div className="container table-container py-5">

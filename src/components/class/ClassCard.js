@@ -5,7 +5,6 @@ import { doc, deleteDoc, updateDoc, arrayRemove } from "firebase/firestore";
 import { db } from "../../firebase/Config";
 import { useData } from "../../context/DataContext";
 import { useAuth } from "../../context/AuthContext";
-import NotFoundText from "../../utils/NotFoundText";
 
 const ClassCard = ({ classItem }) => {
   const { user } = useAuth();
@@ -30,7 +29,6 @@ const ClassCard = ({ classItem }) => {
     }
   };
 
-  if (classItem.length === 0) return <NotFoundText text="No Results" />;
 
   return (
     <tr>
