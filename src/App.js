@@ -18,6 +18,7 @@ import ProtectedRoute from "./utils/ProtectedRoute";
 import PublicRoute from "./utils/PublicRoute";
 
 import { Toaster } from "sonner";
+import ClassPage from "./pages/ClassPage";
 
 function App() {
   return (
@@ -60,6 +61,15 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Class />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/classes/:id"
+              element={
+                <ProtectedRoute>
+                  <ClassPage />
                 </ProtectedRoute>
               }
             />

@@ -23,7 +23,9 @@ const ClassCard = ({ classItem }) => {
 
   return (
     <tr>
-      <td>{classItem.title}</td>
+      <td>
+        <Link to={`/classes/${classItem.id}`}>{classItem.title}</Link>
+      </td>
       <td>{classItem.description}</td>
       <td>{classItem.location}</td>
       <td>{classItem.capacity}</td>

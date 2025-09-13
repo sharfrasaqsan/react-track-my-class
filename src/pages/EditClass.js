@@ -21,6 +21,7 @@ const EditClass = () => {
   const [editStartTime, setEditStartTime] = useState("");
   const [editEndTime, setEditEndTime] = useState("");
   const [editingIndex, setEditingIndex] = useState(null);
+  const [isActive, setIsActive] = useState(true);
 
   const [addLoading, setAddLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -38,6 +39,9 @@ const EditClass = () => {
       setEditLocation(classToEdit.location);
       setEditCapacity(classToEdit.capacity);
       setEditSchedule(classToEdit.schedule || []);
+      setIsActive(
+        typeof classToEdit.isActive === "boolean" ? classToEdit.isActive : true
+      );
     }
   }, [classToEdit]);
 
@@ -57,7 +61,7 @@ const EditClass = () => {
       return;
     }
     // prevent duplicate day
-    if (editSchedule?.some((item) => item.day === editSelectedDay)) {
+    if (editSchedule.some((item) => item.day === editSelectedDay)) {
       setError(`Schedule for ${editSelectedDay} is already added.`);
       return;
     }
@@ -100,7 +104,7 @@ const EditClass = () => {
     }
     // Disallow changing to a day that already exists (other than the one we're editing)
     if (
-      editSchedule?.some(
+      editSchedule.some(
         (item, idx) => idx !== editingIndex && item.day === editSelectedDay
       )
     ) {
@@ -109,7 +113,7 @@ const EditClass = () => {
     }
 
     setEditSchedule((prev) =>
-      prev?.map((item, idx) =>
+      prev.map((item, idx) =>
         idx === editingIndex
           ? {
               day: editSelectedDay,
@@ -207,60 +211,81 @@ const EditClass = () => {
             handleEditSchedule(classToEdit?.id);
           }}
         >
-          <div className="mb-4">
-            <label htmlFor="title" className="form-label">
-              Class Title
-            </label>
-            <input
-              type="text"
-              id="title"
-              className="form-control"
-              value={editTitle}
-              onChange={(e) => setEditTitle(e.target.value)}
-              required
-            />
-          </div>
+          <div className="row">
+            <div className="mb-4 col-md-6">
+              <div className="mb-4">
+                <label htmlFor="title" className="form-label">
+                  Class Title
+                </label>
+                <input
+                  type="text"
+                  id="title"
+                  className="form-control"
+                  value={editTitle}
+                  onChange={(e) => setEditTitle(e.target.value)}
+                  required
+                />
+              </div>
 
-          <div className="mb-4">
-            <label htmlFor="description" className="form-label">
-              Class Description
-            </label>
-            <textarea
-              id="description"
-              rows="3"
-              className="form-control"
-              value={editDescription}
-              onChange={(e) => setEditDescription(e.target.value)}
-              required
-            ></textarea>
-          </div>
+              <div className="mb-4">
+                <label htmlFor="location" className="form-label">
+                  Class Location
+                </label>
+                <input
+                  type="text"
+                  id="location"
+                  className="form-control"
+                  value={editLocation}
+                  onChange={(e) => setEditLocation(e.target.value)}
+                  required
+                />
+              </div>
 
-          <div className="mb-4">
-            <label htmlFor="location" className="form-label">
-              Class Location
-            </label>
-            <input
-              type="text"
-              id="location"
-              className="form-control"
-              value={editLocation}
-              onChange={(e) => setEditLocation(e.target.value)}
-              required
-            />
-          </div>
+              <div className="mb-4">
+                <label htmlFor="capacity" className="form-label">
+                  Class Capacity
+                </label>
+                <input
+                  type="number"
+                  id="capacity"
+                  className="form-control"
+                  value={editCapacity}
+                  onChange={(e) => setEditCapacity(e.target.value)}
+                  required
+                />
+              </div>
 
-          <div className="mb-4">
-            <label htmlFor="capacity" className="form-label">
-              Class Capacity
-            </label>
-            <input
-              type="number"
-              id="capacity"
-              className="form-control"
-              value={editCapacity}
-              onChange={(e) => setEditCapacity(e.target.value)}
-              required
-            />
+              <div className="mb-3">
+                <label htmlFor="status" className="form-label">
+                  Status
+                </label>
+                <select
+                  id="status"
+                  className="form-select"
+                  value={isActive ? "true" : "false"}
+                  onChange={(e) => setIsActive(e.target.value === "true")}
+                >
+                  <option value="true">Active</option>
+                  <option value="false">Inactive</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="mb-4 col-md-6">
+              <div>
+                <label htmlFor="description" className="form-label">
+                  Class Description
+                </label>
+                <textarea
+                  id="description"
+                  rows="13"
+                  className="form-control"
+                  value={editDescription}
+                  onChange={(e) => setEditDescription(e.target.value)}
+                  required
+                ></textarea>
+              </div>
+            </div>
           </div>
 
           <div className="row p-3 mb-4 border rounded">
