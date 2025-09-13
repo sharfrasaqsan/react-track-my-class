@@ -7,7 +7,6 @@ import Register from "./pages/Register";
 import NotFound from "./pages/NotFound";
 import EditClass from "./pages/EditClass";
 import AddClass from "./pages/AddClass";
-import Profile from "./pages/Profile";
 import Class from "./pages/Class";
 
 import Header from "./components/Header";
@@ -34,15 +33,6 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Dashboard />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/profile"
-              element={
-                <ProtectedRoute>
-                  <Profile />
                 </ProtectedRoute>
               }
             />

@@ -1,10 +1,14 @@
 import "../styles/utils/Loader.css";
 
-const Loader = () => {
+const Loader = ({ fullScreen = false }) => {
   return (
-    <div className="loader">
-      <span className="loader-text">loading</span>
-      <span className="load" />
+    <div
+      className={fullScreen ? "loader-wrap loader-wrap--full" : "loader-wrap"}
+    >
+      <div className="loader">
+        <span className="loader-text">loading</span>
+        <span className="load" />
+      </div>
     </div>
   );
 };
