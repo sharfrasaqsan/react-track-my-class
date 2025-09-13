@@ -16,6 +16,7 @@ const EditClass = () => {
   const [editDescription, setEditDescription] = useState("");
   const [editLocation, setEditLocation] = useState("");
   const [editCapacity, setEditCapacity] = useState(0);
+  const [editAmount, setEditAmount] = useState(0);
   const [editSchedule, setEditSchedule] = useState([]);
   const [editSelectedDay, setEditSelectedDay] = useState("");
   const [editStartTime, setEditStartTime] = useState("");
@@ -38,6 +39,7 @@ const EditClass = () => {
       setEditDescription(classToEdit.description);
       setEditLocation(classToEdit.location);
       setEditCapacity(classToEdit.capacity);
+      setEditAmount(classToEdit.amount);
       setEditSchedule(classToEdit.schedule || []);
       setIsActive(
         typeof classToEdit.isActive === "boolean" ? classToEdit.isActive : true
@@ -155,6 +157,21 @@ const EditClass = () => {
       return;
     }
 
+    if (!editCapacity || isNaN(editCapacity)) {
+      setError("Capacity must be a valid number");
+      return;
+    }
+
+    if (!editAmount || isNaN(editAmount)) {
+      setError("Amount must be a valid number");
+      return;
+    }
+
+    if (editAmount <= 0) {
+      setError("Amount must be greater than zero");
+      return;
+    }
+
     if (editCapacity <= 0) {
       setError("Capacity must be greater than zero");
       return;
@@ -173,8 +190,11 @@ const EditClass = () => {
         title: editTitle,
         description: editDescription,
         location: editLocation,
-        capacity: editCapacity,
+        capacity: Number(editCapacity),
+        amount: Number(editAmount),
         schedule: editSchedule,
+        isActive,
+        updatedAt: new Date().toISOString(),
       };
 
       await updateDoc(doc(db, "classes", classId), updatedClass);
@@ -197,8 +217,6 @@ const EditClass = () => {
 
   if (!user) return null;
   if (!classToEdit) return <NotFoundText text="Class not found" />;
-  if (classToEdit.instructorId !== user.id)
-    return <NotFoundText text="You are not authorized to edit this class" />;
 
   return (
     <section className="container py-5">
@@ -250,7 +268,21 @@ const EditClass = () => {
                   id="capacity"
                   className="form-control"
                   value={editCapacity}
-                  onChange={(e) => setEditCapacity(e.target.value)}
+                  onChange={(e) => setEditCapacity(Number(e.target.value))}
+                  required
+                />
+              </div>
+
+              <div className="mb-4">
+                <label htmlFor="amount" className="form-label">
+                  Amount per student
+                </label>
+                <input
+                  type="number"
+                  id="amount"
+                  className="form-control"
+                  value={editAmount}
+                  onChange={(e) => setEditAmount(Number(e.target.value))}
                   required
                 />
               </div>

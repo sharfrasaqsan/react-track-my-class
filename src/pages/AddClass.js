@@ -16,6 +16,7 @@ const AddClass = () => {
   const [description, setDescription] = useState("");
   const [location, setLocation] = useState("");
   const [capacity, setCapacity] = useState(0);
+  const [amount, setAmount] = useState(0);
   const [schedule, setSchedule] = useState([]);
   const [selectedDay, setSelectedDay] = useState("");
   const [startTime, setStartTime] = useState("");
@@ -63,6 +64,21 @@ const AddClass = () => {
       return;
     }
 
+    if (!capacity || isNaN(capacity)) {
+      setError("Capacity must be a valid number");
+      return;
+    }
+
+    if (!amount || isNaN(amount)) {
+      setError("Amount must be a valid number");
+      return;
+    }
+
+    if (amount <= 0) {
+      setError("Amount must be greater than zero");
+      return;
+    }
+
     if (capacity <= 0) {
       setError("Capacity must be greater than zero");
       return;
@@ -82,6 +98,7 @@ const AddClass = () => {
         location,
         capacity: parseInt(capacity),
         schedule,
+        amount: parseFloat(amount),
         isActive: true,
         instructorId: user.id,
         createdAt: new Date().toISOString(),
@@ -111,60 +128,75 @@ const AddClass = () => {
         <h2 className="text-primary mb-4 text-center">Add Tuition Class</h2>
 
         <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label htmlFor="title" className="form-label">
-              Class Title
-            </label>
-            <input
-              type="text"
-              id="title"
-              className="form-control"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-            />
-          </div>
+          <div className="row">
+            <div className="mb-4 col-md-6">
+              <div className="mb-4">
+                <label htmlFor="title" className="form-label">
+                  Class Title
+                </label>
+                <input
+                  type="text"
+                  id="title"
+                  className="form-control"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                />
+              </div>
 
-          <div className="mb-4">
-            <label htmlFor="description" className="form-label">
-              Class Description
-            </label>
-            <textarea
-              id="description"
-              rows="3"
-              className="form-control"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              required
-            ></textarea>
-          </div>
+              <div className="mb-4">
+                <label htmlFor="location" className="form-label">
+                  Class Location
+                </label>
+                <input
+                  type="text"
+                  id="location"
+                  className="form-control"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                />
+              </div>
 
-          <div className="mb-4">
-            <label htmlFor="location" className="form-label">
-              Class Location
-            </label>
-            <input
-              type="text"
-              id="location"
-              className="form-control"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              required
-            />
-          </div>
+              <div className="mb-4">
+                <label htmlFor="capacity" className="form-label">
+                  Class Capacity
+                </label>
+                <input
+                  type="number"
+                  id="capacity"
+                  className="form-control"
+                  value={capacity}
+                  onChange={(e) => setCapacity(e.target.value)}
+                />
+              </div>
 
-          <div className="mb-4">
-            <label htmlFor="capacity" className="form-label">
-              Class Capacity
-            </label>
-            <input
-              type="number"
-              id="capacity"
-              className="form-control"
-              value={capacity}
-              onChange={(e) => setCapacity(e.target.value)}
-              required
-            />
+              <div className="mb-4">
+                <label htmlFor="amount" className="form-label">
+                  Amount per student
+                </label>
+                <input
+                  type="number"
+                  id="amount"
+                  className="form-control"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="mb-4 col-md-6">
+              <div className="mb-4">
+                <label htmlFor="description" className="form-label">
+                  Class Description
+                </label>
+                <textarea
+                  id="description"
+                  rows="9"
+                  className="form-control"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                ></textarea>
+              </div>
+            </div>
           </div>
 
           <div className="row p-3 mb-4 border rounded">

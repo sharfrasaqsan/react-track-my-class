@@ -90,6 +90,32 @@ const ClassPage = () => {
                     </div>
                   </div>
                 </div>
+
+                <div className="col-md-6">
+                  <div className="p-3 border rounded-3 bg-light">
+                    <div className="small text-uppercase text-muted mb-1">
+                      Amount per student
+                    </div>
+                    <div className="fw-semibold">
+                      {classItem.amount ?? "—"}{" "}
+                      {typeof classItem.amount === "number" ? "LKR" : ""}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="col-md-6">
+                  <div className="p-3 border rounded-3 bg-light">
+                    <div className="small text-uppercase text-muted mb-1">
+                      Monthly Revenue Potential
+                    </div>
+                    <div className="fw-semibold">
+                      {typeof classItem.amount === "number" &&
+                      typeof classItem.capacity === "number"
+                        ? classItem.amount * classItem.capacity + " LKR"
+                        : "—"}
+                    </div>
+                  </div>
+                </div>
               </div>
 
               {classItem.createdAt && (
@@ -114,7 +140,7 @@ const ClassPage = () => {
             <div className="card-body">
               <h5 className="card-title mb-3">Schedule</h5>
 
-              {schedule.length > 0 ? (
+              {schedule?.length > 0 ? (
                 <ul className="list-group list-group-flush rounded overflow-hidden">
                   {schedule.map((s, idx) => (
                     <li
