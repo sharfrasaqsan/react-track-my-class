@@ -8,7 +8,6 @@ import { auth } from "../firebase/Config";
 const Logout = () => {
   const { user, setUser } = useAuth();
   const navigate = useNavigate();
-
   if (!user) return null;
 
   const handleLogout = async () => {
@@ -24,7 +23,10 @@ const Logout = () => {
   };
 
   return (
-    <button onClick={handleLogout} className="btn btn-outline-danger btn-sm">
+    <button
+      onClick={handleLogout}
+      className="btn btn-outline-danger btn-sm rounded-pill"
+    >
       Logout
     </button>
   );

@@ -2,10 +2,10 @@ import React from "react";
 
 const Footer = () => {
   return (
-    <footer className="bg-light text-center py-3 border-top">
+    <footer className="bg-light text-center py-3 border-top mt-auto">
       <div className="container">
         <span className="text-muted small">
-          &copy; {new Date().getFullYear()} TrackMyClass — All rights reserved.
+          &copy; {new Date().getFullYear()} TrackMyClass · All rights reserved
         </span>
       </div>
     </footer>

@@ -17,7 +17,6 @@ const ClassPage = () => {
   const { id } = useParams();
 
   const classItem = classes.find((item) => item.id === id);
-
   if (!classItem) {
     return (
       <section className="container py-5">
@@ -40,82 +39,84 @@ const ClassPage = () => {
         (a, b) => WEEKDAY_ORDER.indexOf(a.day) - WEEKDAY_ORDER.indexOf(b.day)
       )
     : [];
-
   const isActive = classItem?.isActive ?? true;
 
   return (
-    <section className="container py-5">
-      {/* Top bar */}
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <Link to="/classes" className="btn btn-link p-0">
-          ← Back
-        </Link>
-        <span
-          className={`badge rounded-pill ${
-            isActive ? "text-bg-success" : "text-bg-secondary"
-          }`}
-        >
-          {isActive ? "Active" : "Inactive"}
-        </span>
+    <section className="container py-4">
+      {/* Hero */}
+      <div
+        className="rounded-4 p-4 p-md-5 mb-4 text-white shadow-sm"
+        style={{
+          background:
+            "linear-gradient(135deg, rgba(13,110,253,1) 0%, rgba(111,66,193,1) 100%)",
+        }}
+      >
+        <div className="d-flex justify-content-between align-items-end flex-wrap gap-3">
+          <div>
+            <h2 className="mb-1">{classItem.title}</h2>
+            <div className="opacity-75 small">
+              <Link
+                to="/classes"
+                className="text-white text-decoration-underline"
+              >
+                ← Back
+              </Link>
+            </div>
+          </div>
+          <div className="d-flex align-items-center gap-2">
+            <span
+              className={`badge rounded-pill ${
+                isActive ? "text-bg-success" : "text-bg-secondary"
+              }`}
+            >
+              {isActive ? "Active" : "Inactive"}
+            </span>
+            <Link
+              to={`/classes/edit/${classItem.id}`}
+              className="btn btn-light btn-sm"
+            >
+              Edit
+            </Link>
+          </div>
+        </div>
       </div>
 
       <div className="row g-4">
         {/* Left: main details */}
         <div className="col-lg-8">
-          <div className="card shadow-sm h-100">
+          <div className="card shadow-sm border-0 rounded-4 h-100">
             <div className="card-body">
-              <h2 className="card-title mb-2">{classItem.title}</h2>
-              <p className="text-muted mb-4">{classItem.description}</p>
+              {classItem.description && (
+                <p className="text-muted mb-4">{classItem.description}</p>
+              )}
 
               <div className="row g-3">
-                <div className="col-md-6">
-                  <div className="p-3 border rounded-3 bg-light">
-                    <div className="small text-uppercase text-muted mb-1">
-                      Location
-                    </div>
-                    <div className="fw-semibold">
-                      {classItem.location || "—"}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="col-md-6">
-                  <div className="p-3 border rounded-3 bg-light">
-                    <div className="small text-uppercase text-muted mb-1">
-                      Capacity
-                    </div>
-                    <div className="fw-semibold">
-                      {classItem.capacity ?? "—"}{" "}
-                      {typeof classItem.capacity === "number" ? "students" : ""}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="col-md-6">
-                  <div className="p-3 border rounded-3 bg-light">
-                    <div className="small text-uppercase text-muted mb-1">
-                      Amount per student
-                    </div>
-                    <div className="fw-semibold">
-                      {classItem.amount ?? "—"}{" "}
-                      {typeof classItem.amount === "number" ? "LKR" : ""}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="col-md-6">
-                  <div className="p-3 border rounded-3 bg-light">
-                    <div className="small text-uppercase text-muted mb-1">
-                      Monthly Revenue Potential
-                    </div>
-                    <div className="fw-semibold">
-                      {typeof classItem.amount === "number" &&
-                      typeof classItem.capacity === "number"
-                        ? classItem.amount * classItem.capacity + " LKR"
-                        : "—"}
-                    </div>
-                  </div>
-                </div>
+                <InfoTile label="Location" value={classItem.location} />
+                <InfoTile
+                  label="Capacity"
+                  value={
+                    typeof classItem.capacity === "number"
+                      ? `${classItem.capacity} students`
+                      : "—"
+                  }
+                />
+                <InfoTile
+                  label="Amount per student"
+                  value={
+                    typeof classItem.amount === "number"
+                      ? `LKR ${classItem.amount}`
+                      : "—"
+                  }
+                />
+                <InfoTile
+                  label="Monthly Revenue Potential"
+                  value={
+                    typeof classItem.amount === "number" &&
+                    typeof classItem.capacity === "number"
+                      ? `LKR ${classItem.amount * classItem.capacity}`
+                      : "—"
+                  }
+                />
               </div>
 
               {classItem.createdAt && (
@@ -136,11 +137,10 @@ const ClassPage = () => {
 
         {/* Right: schedule */}
         <div className="col-lg-4">
-          <div className="card shadow-sm h-100">
+          <div className="card shadow-sm border-0 rounded-4 h-100">
             <div className="card-body">
               <h5 className="card-title mb-3">Schedule</h5>
-
-              {schedule?.length > 0 ? (
+              {schedule.length > 0 ? (
                 <ul className="list-group list-group-flush rounded overflow-hidden">
                   {schedule.map((s, idx) => (
                     <li
@@ -164,5 +164,14 @@ const ClassPage = () => {
     </section>
   );
 };
+
+const InfoTile = ({ label, value }) => (
+  <div className="col-md-6">
+    <div className="p-3 border rounded-3 bg-light h-100">
+      <div className="small text-uppercase text-muted mb-1">{label}</div>
+      <div className="fw-semibold">{value || "—"}</div>
+    </div>
+  </div>
+);
 
 export default ClassPage;
