@@ -3,6 +3,7 @@ import { useData } from "../context/DataContext";
 import { useParams, Link } from "react-router-dom";
 import { db } from "../firebase/Config";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
+import ClassFeesCard from "../components/class/ClassFeedCard";
 
 const WEEKDAY_ORDER = [
   "Monday",
@@ -258,6 +259,13 @@ export default function ClassPage() {
               )}
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Fees for this month */}
+      <div className="row g-4 mt-1">
+        <div className="col-12">
+          <ClassFeesCard classItem={classItem} />
         </div>
       </div>
 

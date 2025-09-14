@@ -1,3 +1,4 @@
+// src/pages/Dashboard.js
 import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { db } from "../firebase/Config";
@@ -116,10 +117,41 @@ export default function Dashboard() {
       }
       setMiniSeries(series);
     })();
-  }, [userId, thisMonthKey]); // update when user changes or month rolls
+  }, [userId, thisMonthKey]); // update when user or month changes
 
   const maxMini = Math.max(1, ...miniSeries.map((s) => s.count));
   const activeCount = userClasses.filter((c) => c?.isActive ?? true).length;
+
+  /* ---------- Billing summary (this month; per-user) ---------- */
+  const [billing, setBilling] = useState({ expected: 0, paid: 0, due: 0 });
+  useEffect(() => {
+    if (!userId) return;
+    const qFees = query(
+      collection(db, "classFees"),
+      where("createdBy", "==", userId),
+      where("monthKey", "==", thisMonthKey)
+    );
+    const unsub = onSnapshot(qFees, (snap) => {
+      let expected = 0;
+      let paid = 0;
+      snap.forEach((d) => {
+        const data = d.data() || {};
+        // Fallback: compute expected from rate * enrolled if not stored
+        const exp =
+          Number(data.expected ?? 0) ||
+          Number(data.ratePerStudent || 0) * Number(data.enrolledCount || 0);
+        expected += exp;
+        paid += Number(data.amountPaid || 0);
+      });
+      setBilling({ expected, paid, due: Math.max(0, expected - paid) });
+    });
+    return unsub;
+  }, [userId, thisMonthKey]);
+
+  const progress =
+    billing.expected > 0
+      ? Math.min(100, Math.round((billing.paid / billing.expected) * 100))
+      : 0;
 
   /* ---------- Upcoming (next 7 days; per-user) ---------- */
   const upcoming = useMemo(() => {
@@ -155,7 +187,7 @@ export default function Dashboard() {
   /* ---------- UI ---------- */
   return (
     <section className="container py-4">
-      {/* If logged out, show a friendly prompt (hooks above still ran safely) */}
+      {/* Logged-out prompt (hooks above still ran safely) */}
       {!userId ? (
         <div className="card border-0 shadow-sm rounded-4">
           <div className="card-body p-4">
@@ -343,6 +375,64 @@ export default function Dashboard() {
 
             {/* Right */}
             <div className="col-lg-5 d-flex flex-column gap-4">
+              {/* Billing summary (this month) */}
+              <div className="card shadow-sm border-0">
+                <div className="card-body">
+                  <div className="d-flex align-items-center justify-content-between mb-2">
+                    <h5 className="mb-0">Billing (this month)</h5>
+                    <span className="small text-muted">{thisMonthKey}</span>
+                  </div>
+
+                  <div className="row g-3">
+                    <BillingTile
+                      label="Expected"
+                      value={`LKR ${billing.expected.toLocaleString()}`}
+                    />
+                    <BillingTile
+                      label="Collected"
+                      value={`LKR ${billing.paid.toLocaleString()}`}
+                    />
+                    <BillingTile
+                      label="Due"
+                      value={`LKR ${billing.due.toLocaleString()}`}
+                    />
+                  </div>
+
+                  <div className="mt-3">
+                    <div
+                      className="progress"
+                      role="progressbar"
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                      aria-valuenow={progress}
+                    >
+                      <div
+                        className="progress-bar"
+                        style={{ width: `${progress}%` }}
+                        title={`${progress}% collected`}
+                      >
+                        {progress}%
+                      </div>
+                    </div>
+                    <div className="small text-muted mt-1">
+                      {billing.expected === 0
+                        ? "No fees set for this month yet."
+                        : `${progress}% of expected collected.`}
+                    </div>
+                  </div>
+
+                  <div className="mt-3 d-flex gap-2">
+                    <Link
+                      to="/classes"
+                      className="btn btn-sm btn-outline-secondary"
+                    >
+                      Open Classes
+                    </Link>
+                  </div>
+                </div>
+              </div>
+
+              {/* Monthly Completions */}
               <div className="card shadow-sm border-0">
                 <div className="card-body">
                   <h5 className="mb-3">Monthly Completions</h5>
@@ -380,6 +470,7 @@ export default function Dashboard() {
                 </div>
               </div>
 
+              {/* Needs attention */}
               <div className="card shadow-sm border-0">
                 <div className="card-body">
                   <h5 className="mb-3">Needs attention</h5>
@@ -462,6 +553,17 @@ function KpiCard({ title, value, hint, emoji = "" }) {
           <div className="fs-3 fw-semibold mt-1">{value ?? "—"}</div>
           {hint && <div className="small text-muted">{hint}</div>}
         </div>
+      </div>
+    </div>
+  );
+}
+
+function BillingTile({ label, value }) {
+  return (
+    <div className="col-12 col-md-4">
+      <div className="p-3 border rounded-3 bg-light h-100">
+        <div className="small text-uppercase text-muted mb-1">{label}</div>
+        <div className="fw-semibold">{value}</div>
       </div>
     </div>
   );

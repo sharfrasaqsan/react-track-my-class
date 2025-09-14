@@ -208,10 +208,9 @@ const AddClass = () => {
 
                 <div className="col-md-6">
                   <label htmlFor="amount" className="form-label">
-                    Amount per student
+                    Amount per student (LKR)
                   </label>
                   <div className="input-group">
-                    <span className="input-group-text">LKR</span>
                     <input
                       type="number"
                       id="amount"

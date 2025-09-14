@@ -11,6 +11,7 @@ import {
 } from "firebase/firestore";
 import { useData } from "../context/DataContext";
 import { useAuth } from "../context/AuthContext";
+import { Link } from "react-router-dom";
 
 /* TZ helpers */
 const TZ = "Asia/Colombo";
@@ -151,7 +152,9 @@ export default function Today() {
                       >
                         <div className="flex-grow-1">
                           <div className="fw-semibold text-truncate">
-                            {c.title || "Untitled class"}
+                            <Link to={`/classes/${c.id}`}>
+                              {c.title || "Untitled class"}
+                            </Link>
                           </div>
                           <div className="small text-muted">{timeRange(c)}</div>
                           <div className="d-md-none mt-1">

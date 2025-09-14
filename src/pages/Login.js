@@ -5,6 +5,7 @@ import { auth, db } from "../firebase/Config";
 import { doc, getDoc } from "firebase/firestore";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "sonner";
+import ButtonLoader from "../utils/ButtonLoader";
 
 const Login = () => {
   const { setUser } = useAuth();
@@ -99,7 +100,13 @@ const Login = () => {
               className="btn btn-primary w-100"
               disabled={loginLoading}
             >
-              {loginLoading ? "Logging in…" : "Login"}
+              {loginLoading ? (
+                <>
+                  Logging in... <ButtonLoader />
+                </>
+              ) : (
+                "Login"
+              )}
             </button>
 
             {error && <div className="alert alert-danger mt-3">{error}</div>}
