@@ -1,5 +1,7 @@
 # Track My Class
 
+[![Live Demo](https://img.icons8.com/?size=100&id=UyjPlooIqDBC&format=png&color=000000)](https://track-my-class.vercel.app/) 
+
 A web application designed to help teachers manage their classes, track schedules, and monitor student fees.
 
 ## Features and Functionality
