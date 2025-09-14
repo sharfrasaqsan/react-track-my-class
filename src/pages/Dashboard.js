@@ -1,3 +1,4 @@
+// src/pages/Dashboard.js
 import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { db } from "../firebase/Config";
@@ -13,35 +14,37 @@ import {
 } from "firebase/firestore";
 import { useData } from "../context/DataContext";
 
+/* Time helpers (Asia/Colombo) */
 const TZ = "Asia/Colombo";
 const fmtYMD = (d) =>
   new Intl.DateTimeFormat("en-CA", { timeZone: TZ }).format(d); // YYYY-MM-DD
 const fmtWD = (d) =>
   new Intl.DateTimeFormat("en-US", { timeZone: TZ, weekday: "long" }).format(d);
-const today = new Date();
-const todayYMD = fmtYMD(today);
-const todayWD = fmtWD(today);
-const thisMonthKey = todayYMD.slice(0, 7);
-
 
 export default function Dashboard() {
   const { classes = [] } = useData();
 
-  // --- TODAY (derived from weekly schedule) -------------------------------
+  /* Recompute “today” each render (safer around midnight) */
+  const now = new Date();
+  const todayYMD = fmtYMD(now);
+  const todayWD = fmtWD(now);
+  const thisMonthKey = todayYMD.slice(0, 7);
+
+  /* ---------- TODAY (from weekly schedule) ---------- */
   const todayClasses = useMemo(() => {
     return (classes || []).filter((c) => {
       const active = c?.isActive ?? true;
       const sched = Array.isArray(c?.schedule) ? c.schedule : [];
       return active && sched.some((s) => s.day === todayWD);
     });
-  }, [classes]);
+  }, [classes, todayWD]);
 
   const timeRangeForToday = (c) => {
     const s = (c?.schedule || []).find((x) => x.day === todayWD);
     return s ? `${s.startTime}–${s.endTime}` : "";
   };
 
-  // Completed map for today
+  /* Completed map for today */
   const [completedMap, setCompletedMap] = useState({});
   useEffect(() => {
     const q = query(
@@ -54,7 +57,7 @@ export default function Dashboard() {
       setCompletedMap(map);
     });
     return unsub;
-  }, []);
+  }, [todayYMD]);
 
   const markCompleted = async (classId) => {
     const id = `${classId}_${todayYMD}`;
@@ -70,7 +73,7 @@ export default function Dashboard() {
     );
   };
 
-  // --- MONTHLY COMPLETIONS (KPI + tiny chart) ----------------------------
+  /* ---------- MONTHLY COMPLETIONS (KPI + mini chart) ---------- */
   const [monthTotal, setMonthTotal] = useState(0);
   useEffect(() => {
     const q = query(
@@ -79,17 +82,16 @@ export default function Dashboard() {
     );
     const unsub = onSnapshot(q, (snap) => setMonthTotal(snap.size));
     return unsub;
-  }, []);
+  }, [thisMonthKey]);
 
   // last 6 months (including this one)
   const [miniSeries, setMiniSeries] = useState([]);
   useEffect(() => {
     (async () => {
       const series = [];
-      let d = new Date(today);
       for (let i = 5; i >= 0; i--) {
-        const dt = new Date(d.getFullYear(), d.getMonth() - i, 1);
-        const key = fmtYMD(dt).slice(0, 7);
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const key = fmtYMD(d).slice(0, 7);
         const q = query(
           collection(db, "classCompletions"),
           where("monthKey", "==", key)
@@ -99,15 +101,16 @@ export default function Dashboard() {
       }
       setMiniSeries(series);
     })();
-  }, []);
+  }, [now]);
 
   const maxMini = Math.max(1, ...miniSeries.map((s) => s.count));
+  const activeCount = (classes || []).filter((c) => c?.isActive ?? true).length;
 
-  // --- UPCOMING (next 7 days from schedule) ------------------------------
+  /* ---------- UPCOMING (next 7 days from schedule) ---------- */
   const upcoming = useMemo(() => {
     const items = [];
     for (let i = 1; i <= 7; i++) {
-      const d = new Date(today);
+      const d = new Date(now);
       d.setDate(d.getDate() + i);
       const ymd = fmtYMD(d);
       const wd = fmtWD(d);
@@ -125,19 +128,18 @@ export default function Dashboard() {
             classId: c.id,
             title: c.title || "Untitled class",
             time: s ? `${s.startTime}–${s.endTime}` : "",
+            location: c.location || "—", // 👈 include location
           };
         });
       if (dayItems.length) items.push({ ymd, wd, dayItems });
     }
     return items;
-  }, [classes]);
+  }, [classes, now]);
 
-  const activeCount = (classes || []).filter((c) => c?.isActive ?? true).length;
-
-  // --- UI ----------------------------------------------------------------
+  /* ---------- UI ---------- */
   return (
     <section className="container py-4">
-      {/* Hero / Header */}
+      {/* Hero */}
       <div
         className="rounded-4 p-4 p-md-5 mb-4 text-white shadow-sm"
         style={{
@@ -181,7 +183,7 @@ export default function Dashboard() {
           title="Active classes"
           value={activeCount}
           hint="currently running"
-          emoji="✅"
+          emoji="📘"
         />
         <KpiCard
           title="Classes next 7 days"
@@ -194,7 +196,7 @@ export default function Dashboard() {
       <div className="row g-4">
         {/* Left column */}
         <div className="col-lg-7 d-flex flex-column gap-4">
-          {/* Today list */}
+          {/* Today */}
           <div className="card shadow-sm border-0">
             <div className="card-body">
               <div className="d-flex align-items-center justify-content-between mb-3">
@@ -213,17 +215,37 @@ export default function Dashboard() {
                     return (
                       <li
                         key={c.id}
-                        className="list-group-item d-flex justify-content-between align-items-center"
+                        className="list-group-item d-flex align-items-center gap-3"
                       >
-                        <div>
-                          <div className="fw-semibold">
+                        {/* left: title/time */}
+                        <div className="flex-grow-1">
+                          <div className="fw-semibold text-truncate">
                             {c.title || "Untitled class"}
                           </div>
                           <div className="small text-muted">
                             {timeRangeForToday(c)}
                           </div>
+                          {/* location on mobile */}
+                          <div className="d-md-none mt-1">
+                            <span className="badge rounded-pill text-bg-secondary">
+                              📍 {c.location || "—"}
+                            </span>
+                          </div>
                         </div>
-                        <div className="d-flex align-items-center gap-2">
+
+                        {/* location pill on md+ */}
+                        <div
+                          className="d-none d-md-block small text-truncate"
+                          style={{ maxWidth: 220 }}
+                          title={c.location}
+                        >
+                          <span className="badge rounded-pill text-bg-secondary">
+                            📍 {c.location || "—"}
+                          </span>
+                        </div>
+
+                        {/* right: action/status */}
+                        <div className="ms-auto">
                           {done ? (
                             <span className="badge text-bg-success">
                               Completed
@@ -269,10 +291,15 @@ export default function Dashboard() {
                         {day.dayItems.map((it) => (
                           <div
                             key={it.id}
-                            className="d-flex justify-content-between small"
+                            className="d-flex justify-content-between align-items-center small flex-wrap gap-2"
                           >
                             <span className="text-truncate">{it.title}</span>
-                            <span className="text-muted">{it.time}</span>
+                            <div className="d-flex align-items-center gap-2">
+                              <span className="badge rounded-pill text-bg-secondary">
+                                📍 {it.location}
+                              </span>
+                              <span className="text-muted">{it.time}</span>
+                            </div>
                           </div>
                         ))}
                       </div>
@@ -298,7 +325,7 @@ export default function Dashboard() {
                   style={{ minHeight: 160 }}
                 >
                   {miniSeries.map((s) => {
-                    const h = (s.count / maxMini) * 120 + 12; // 12px base so zeros still visible
+                    const h = (s.count / maxMini) * 120 + 12; // tiny base so zeros still visible
                     const label = s.key.slice(2); // YY-MM
                     return (
                       <div
@@ -324,7 +351,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Needs attention (simple heuristics) */}
+          {/* Needs attention */}
           <div className="card shadow-sm border-0">
             <div className="card-body">
               <h5 className="mb-3">Needs attention</h5>
@@ -390,7 +417,7 @@ export default function Dashboard() {
   );
 }
 
-/* ---------- Small presentational KPI card ---------- */
+/* ---------- Presentational KPI card ---------- */
 function KpiCard({ title, value, hint, emoji = "" }) {
   return (
     <div className="col-6 col-md-3">
