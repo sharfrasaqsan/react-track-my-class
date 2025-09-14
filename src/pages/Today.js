@@ -109,17 +109,35 @@ export default function TodaySimple() {
               {todayClasses.map((c) => {
                 const done = !!completedMap[c.id];
                 return (
-                  <li
-                    key={c.id}
-                    className="list-group-item d-flex justify-content-between align-items-center"
-                  >
-                    <div>
-                      <div className="fw-semibold">
+                  <li className="list-group-item d-flex align-items-center gap-3">
+                    {/* left: title/time (grows) */}
+                    <div className="flex-grow-1">
+                      <div className="fw-semibold text-truncate">
                         {c.title || "Untitled class"}
                       </div>
                       <div className="small text-muted">{timeRange(c)}</div>
+
+                      {/* location under title on mobile */}
+                      <div className="d-md-none mt-1">
+                        <span className="badge rounded-pill text-bg-secondary">
+                          📍 {c.location || "—"}
+                        </span>
+                      </div>
                     </div>
-                    <div>
+
+                    {/* location as a pill on md+ screens */}
+                    <div
+                      className="d-none d-md-block small text-truncate"
+                      style={{ maxWidth: 220 }}
+                      title={c.location}
+                    >
+                      <span className="badge rounded-pill text-bg-secondary">
+                        📍 {c.location || "—"}
+                      </span>
+                    </div>
+
+                    {/* right: action/status */}
+                    <div className="ms-auto">
                       {done ? (
                         <span className="badge text-bg-success">Completed</span>
                       ) : (
