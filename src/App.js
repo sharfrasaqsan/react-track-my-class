@@ -8,6 +8,7 @@ import NotFound from "./pages/NotFound";
 import EditClass from "./pages/EditClass";
 import AddClass from "./pages/AddClass";
 import Class from "./pages/Class";
+import Today from "./pages/Today";
 
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -69,6 +70,15 @@ function App() {
               element={
                 <ProtectedRoute>
                   <EditClass />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/today"
+              element={
+                <ProtectedRoute>
+                  <Today />
                 </ProtectedRoute>
               }
             />

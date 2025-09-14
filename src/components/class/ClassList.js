@@ -6,34 +6,32 @@ import { useAuth } from "../../context/AuthContext";
 
 const ClassList = () => {
   const { user } = useAuth();
-  const { classes, loading } = useData();
+  const { classes = [], loading } = useData();
 
-  const userClasses = classes?.filter((cls) => cls.createdBy === user.id);
+  const userClasses = classes?.filter((cls) => cls.createdBy === user?.id);
 
-  console.log(userClasses);
-
-  if (loading) return <Loader fullScreen />;
+  if (loading) return <Loader />;
   if (!user) return null;
-  if (classes.length === 0)
-    return <NotFoundText text="No classes available right now." />;
   if (!userClasses || userClasses.length === 0)
-    return <NotFoundText text="No classes available right now. Please create the first class." />;
+    return <NotFoundText text="No classes yet. Create your first one!" />;
 
   return (
-    <div className="container table-container py-5">
-      <table className="table table-bordered table-striped table-hover table-responsive">
-        <thead className="thead-dark">
+    <div className="table-responsive">
+      <table className="table table-hover align-middle mb-0">
+        <thead className="table-light">
           <tr>
-            <th>Title</th>
-            <th>Description</th>
+            <th style={{ minWidth: 180 }}>Title</th>
+            <th style={{ minWidth: 220 }}>Description</th>
             <th>Location</th>
             <th>Capacity</th>
-            <th>Schedule</th>
-            <th>Actions</th>
+            <th style={{ minWidth: 220 }}>Schedule</th>
+            <th className="text-end" style={{ width: 160 }}>
+              Actions
+            </th>
           </tr>
         </thead>
         <tbody>
-          {userClasses?.map((classItem) => (
+          {userClasses.map((classItem) => (
             <ClassCard key={classItem.id} classItem={classItem} />
           ))}
         </tbody>

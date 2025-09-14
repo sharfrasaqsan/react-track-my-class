@@ -6,8 +6,13 @@ const Navbar = () => {
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
 
+  const linkClass = ({ isActive }) =>
+    `nav-link px-3 rounded-pill ${
+      isActive ? "bg-primary text-white" : "text-secondary"
+    }`;
+
   return (
-    <nav className="navbar navbar-expand-lg">
+    <nav className="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top">
       <div className="container">
         <button
           className="navbar-toggler"
@@ -19,34 +24,34 @@ const Navbar = () => {
         </button>
 
         <div className={`collapse navbar-collapse ${isOpen ? "show" : ""}`}>
-          <ul className="navbar-nav ms-auto text-center">
+          <ul className="navbar-nav ms-auto gap-2 align-items-lg-center">
             {user ? (
               <>
                 <li className="nav-item">
-                  <NavLink to="/" className="nav-link">
+                  <NavLink to="/" className={linkClass}>
                     Dashboard
                   </NavLink>
                 </li>
                 <li className="nav-item">
-                  <NavLink to="/classes" className="nav-link">
-                    Classes
+                  <NavLink to="/today" className={linkClass}>
+                    Today
                   </NavLink>
                 </li>
                 <li className="nav-item">
-                  <NavLink to={"/add-class"} className="nav-link">
-                    Add Class
+                  <NavLink to="/classes" className={linkClass}>
+                    Classes
                   </NavLink>
                 </li>
               </>
             ) : (
               <>
                 <li className="nav-item">
-                  <NavLink to="/login" className="nav-link">
+                  <NavLink to="/login" className={linkClass}>
                     Login
                   </NavLink>
                 </li>
                 <li className="nav-item">
-                  <NavLink to="/register" className="nav-link">
+                  <NavLink to="/register" className={linkClass}>
                     Register
                   </NavLink>
                 </li>
