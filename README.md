@@ -1,70 +1,151 @@
-# Getting Started with Create React App
+# Track My Class
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A web application designed to help teachers manage their classes, track schedules, and monitor student fees.
 
-## Available Scripts
+## Features and Functionality
 
-In the project directory, you can run:
+-   **Dashboard:** Provides an overview of the day's sessions, monthly completions, active classes, and upcoming sessions.
+-   **Class Management:**
+    -   Create, edit, and delete classes.
+    -   Define class schedules with specific days and times.
+    -   Set capacity and fees per student.
+    -   Track attendance and mark classes as completed.
+-   **User Authentication:** Secure user registration and login using Firebase Authentication.
+-   **Fee Tracking:** Monitor expected, collected, and due fees for each class on a monthly basis.
+-   **Protected Routes:** Ensure that only authenticated users can access specific pages.
+-   **Responsive Design:** Provides a user-friendly experience on various devices.
 
-### `npm start`
+## Technology Stack
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+-   **React:** A JavaScript library for building user interfaces.
+-   **React Router:** A standard library for routing in React.
+-   **Firebase:**
+    -   **Authentication:** For user authentication (login/register).
+    -   **Firestore:** For storing application data, including user profiles, classes, schedules, and fee information.
+-   **Bootstrap:** A CSS framework for responsive design and styling.
+-   **Sonner:** For displaying toast notifications.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Prerequisites
 
-### `npm test`
+Before you begin, ensure you have the following installed:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+-   **Node.js:** (version >= 16)  - [https://nodejs.org/](https://nodejs.org/)
+-   **npm** or **yarn:** Package managers for installing dependencies.
+-   **Firebase Project:** You'll need a Firebase project to configure authentication and Firestore.  Create a project at [https://console.firebase.google.com/](https://console.firebase.google.com/)
 
-### `npm run build`
+## Installation Instructions
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+1.  **Clone the repository:**
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+    ```bash
+    git clone https://github.com/sharfrasaqsan/react-track-my-class.git
+    cd react-track-my-class
+    ```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+2.  **Install dependencies:**
 
-### `npm run eject`
+    Using npm:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+    ```bash
+    npm install
+    ```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+    Using yarn:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+    ```bash
+    yarn install
+    ```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+3.  **Configure Firebase:**
 
-## Learn More
+    -   Create a `src/firebase/Config.js` file (if it doesn't already exist, it is already created).
+    -   Replace the placeholder values with your Firebase project credentials.  You can find these credentials in the Firebase console under Project settings.
+    ```javascript
+    import { initializeApp } from "firebase/app";
+    import { getAuth } from "firebase/auth";
+    import { getFirestore } from "firebase/firestore";
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID",
+      measurementId: "YOUR_MEASUREMENT_ID"
+    };
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+    const app = initializeApp(firebaseConfig);
 
-### Code Splitting
+    export const auth = getAuth(app);
+    export const db = getFirestore(app);
+    ```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+4.  **Environment Variables (if needed):**  This project does not directly utilize `.env` files for configuration within the provided code. However, if you plan to expand the project and require environment variables, you would create a `.env` file in the root directory and access the variables using `process.env.VARIABLE_NAME`.
 
-### Analyzing the Bundle Size
+## Usage Guide
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+1.  **Start the development server:**
 
-### Making a Progressive Web App
+    Using npm:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+    ```bash
+    npm start
+    ```
 
-### Advanced Configuration
+    Using yarn:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+    ```bash
+    yarn start
+    ```
 
-### Deployment
+2.  **Open the application in your browser:** Navigate to `http://localhost:3000` (or the address provided by the development server).
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+3.  **Register or Login:** Create a new account or log in with your existing credentials.
 
-### `npm run build` fails to minify
+4.  **Navigate the Application:**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+    -   **Dashboard:** View a summary of your classes and activities.
+    -   **Classes:** Manage your classes (add, edit, delete).  Access this page via the Navbar or `http://localhost:3000/classes`.
+    -   **Today:** See the schedule for the current day. Access via the Navbar or `http://localhost:3000/today`.
+    -   **Add Class:** Create a new class. Access via the Navbar -> Classes, then click '+ Add Class', or directly at `http://localhost:3000/add-class`.
+    -   **Edit Class:**  Modify existing class details. Access by navigating to Classes and then clicking "Edit" button of the class or directly at `http://localhost:3000/classes/edit/:id`.
+
+## API Documentation
+
+This project uses Firebase Authentication and Firestore, and relies on their respective APIs. Please refer to the official Firebase documentation for detailed API usage:
+
+-   **Firebase Authentication:** [https://firebase.google.com/docs/auth](https://firebase.google.com/docs/auth)
+-   **Firestore:** [https://firebase.google.com/docs/firestore](https://firebase.google.com/docs/firestore)
+
+Specific API calls used within the codebase:
+
+-   `createUserWithEmailAndPassword(auth, email, password)` (src/pages/Register.js): Creates a new user with email and password.
+-   `signInWithEmailAndPassword(auth, email, password)` (src/pages/Login.js): Signs in an existing user with email and password.
+-   `signOut(auth)` (src/components/Logout.js): Signs out the current user.
+-   `getDoc(doc(db, "users", currentUser.uid))` (src/context/AuthContext.js): Retrieves user data from Firestore.
+-   `addDoc(collection(db, "classes"), newClass)` (src/pages/AddClass.js): Adds a new class document to Firestore.
+-   `updateDoc(doc(db, "classes", classId), updatedClass)` (src/pages/EditClass.js): Updates an existing class document in Firestore.
+-   `deleteDoc(doc(db, "classes", classId))` (src/components/class/ClassCard.js): Deletes a class document from Firestore.
+-   `getDocs(collection(db, "users"))` (src/context/DataContext.js): Retrieves all users from Firestore.
+-   `getDocs(collection(db, "classes"))` (src/context/DataContext.js): Retrieves all classes from Firestore.
+
+## Contributing Guidelines
+
+Contributions are welcome! To contribute to this project, please follow these guidelines:
+
+1.  **Fork the repository.**
+2.  **Create a new branch** for your feature or bug fix.  Name your branch descriptively (e.g., `feature/add-fee-tracking`, `fix/login-error`).
+3.  **Make your changes** and ensure your code adheres to the existing style and conventions.
+4.  **Test your changes** thoroughly.
+5.  **Commit your changes** with clear and concise commit messages.
+6.  **Push your branch** to your forked repository.
+7.  **Submit a pull request** to the `main` branch of the original repository.  Provide a detailed description of your changes in the pull request.
+
+## License Information
+
+No license has been specified for this project. All rights are reserved.
+
+## Contact/Support Information
+
+For questions, bug reports, or feature requests, please contact the repository owner through GitHub.  You can open an issue on the repository to report any problems or suggest improvements.
