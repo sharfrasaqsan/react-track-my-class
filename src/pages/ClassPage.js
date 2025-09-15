@@ -169,7 +169,7 @@ export default function ClassPage() {
               ✅ {completedThisMonth} this month
             </span>
             <Link
-              to={`/edit-class/${classItem.id}`}
+              to={`/classes/edit-class/${classItem.id}`}
               className="btn btn-light btn-sm"
             >
               Edit
