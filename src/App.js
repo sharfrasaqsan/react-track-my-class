@@ -9,6 +9,7 @@ import EditClass from "./pages/EditClass";
 import AddClass from "./pages/AddClass";
 import Class from "./pages/Class";
 import Today from "./pages/Today";
+import ResetPassword from "./pages/ResetPassword";
 
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -97,6 +98,15 @@ function App() {
               element={
                 <PublicRoute>
                   <Register />
+                </PublicRoute>
+              }
+            />
+
+            <Route
+              path="/reset-password"
+              element={
+                <PublicRoute>
+                  <ResetPassword />
                 </PublicRoute>
               }
             />
